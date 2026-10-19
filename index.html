@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Formula Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#f3f6f4;
+  --surface:#ffffff;
+  --surface-2:#eef2f0;
+  --ink:#121a17;
+  --ink-soft:#4a5752;
+  --ink-faint:#8a968f;
+  --line:#dde4e0;
+  --accent:#17935f;
+  --accent-ink:#0c6b44;
+  --accent-wash:#e3f3ea;
+  --amber:#c9801b;
+  --amber-wash:#f8eed8;
+  --good:#17935f;
+  --good-wash:#e3f3ea;
+  --bad:#d6452f;
+  --bad-wash:#fbe6e1;
+  --shadow:0 1px 2px rgba(18,26,23,.05),0 10px 30px rgba(18,26,23,.06);
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1512;
+    --surface:#151e1a;
+    --surface-2:#1b2621;
+    --ink:#eaf1ed;
+    --ink-soft:#a8b5 af;
+    --ink-soft:#a7b4ae;
+    --ink-faint:#6f7e77;
+    --line:#2a3630;
+    --accent:#3ec98a;
+    --accent-ink:#8ff0bf;
+    --accent-wash:#163026;
+    --amber:#e3a94a;
+    --amber-wash:#352a16;
+    --good:#3ec98a;
+    --good-wash:#163026;
+    --bad:#f0775e;
+    --bad-wash:#39201b;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1512;
+  --surface:#151e1a;
+  --surface-2:#1b2621;
+  --ink:#eaf1ed;
+  --ink-soft:#a7b4ae;
+  --ink-faint:#6f7e77;
+  --line:#2a3630;
+  --accent:#3ec98a;
+  --accent-ink:#8ff0bf;
+  --accent-wash:#163026;
+  --amber:#e3a94a;
+  --amber-wash:#352a16;
+  --good:#3ec98a;
+  --good-wash:#163026;
+  --bad:#f0775e;
+  --bad-wash:#39201b;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;text-wrap:balance;margin:0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+/* header */
+header{padding:28px 0 18px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:12px}
+.mark{width:40px;height:40px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;flex:none;box-shadow:var(--shadow)}
+:root[data-theme="dark"] .mark,:root:not([data-theme="light"]) .mark{color:#06110b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mark{color:#06110b}}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.tag{color:var(--ink-soft);font-size:13.5px;margin-top:2px}
+.iconbtn{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:11px;width:42px;height:42px;display:grid;place-items:center;cursor:pointer;font-size:19px;flex:none}
+.iconbtn:hover{border-color:var(--accent)}
+
+/* tabs */
+.tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);padding:5px;border-radius:14px;margin:20px 0 6px;position:sticky;top:8px;z-index:20;box-shadow:var(--shadow)}
+.tab{flex:1;border:0;background:transparent;color:var(--ink-soft);font-family:"Bricolage Grotesque";font-weight:700;font-size:14.5px;padding:10px 8px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.tab .t-ico{font-size:16px}
+
+.panel{display:none;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* filter chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"],:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#06110b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#06110b}}
+
+/* learn cards */
+.cat{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);margin:26px 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.fname{font-family:"Bricolage Grotesque";font-weight:700;font-size:18px;letter-spacing:-.01em}
+.formula{margin:12px 0;background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:15.5px;font-weight:700;color:var(--ink);overflow-x:auto}
+.formula .eq{color:var(--accent-ink)}
+.meaning{color:var(--ink-soft);font-size:14.5px}
+.eg{margin-top:10px;font-size:13.5px;color:var(--ink-soft);border-left:3px solid var(--accent);padding:2px 0 2px 12px}
+.eg b{color:var(--ink)}
+
+/* flashcards */
+.fc-stage{perspective:1400px;margin:18px 0}
+.fc{position:relative;min-height:260px;cursor:pointer}
+.fc-face{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:26px;display:flex;flex-direction:column;justify-content:center;min-height:260px}
+.fc-hint{position:absolute;top:14px;right:16px;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.fc-cat{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);font-weight:700;margin-bottom:12px}
+.fc-q{font-family:"Bricolage Grotesque";font-weight:800;font-size:27px;letter-spacing:-.02em;text-wrap:balance}
+.fc-answer{display:none}
+.fc.flipped .fc-answer{display:block;animation:fade .2s ease}
+.fc.flipped .fc-prompt{display:none}
+.fc-formula{font-family:"JetBrains Mono";font-weight:700;font-size:19px;color:var(--accent-ink);margin:4px 0 14px;line-height:1.5;overflow-x:auto}
+.nav{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.count{font-variant-numeric:tabular-nums;color:var(--ink-soft);font-size:14px;font-weight:600;min-width:62px;text-align:center}
+
+/* practice */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 8px;text-align:center;box-shadow:var(--shadow)}
+.stat .n{font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;font-variant-numeric:tabular-nums}
+.stat .l{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
+.stat.streak .n{color:var(--amber)}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.q-cat{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+.q-text{font-size:17px;margin:10px 0 4px;line-height:1.5}
+.q-text b{font-variant-numeric:tabular-nums}
+.ansrow{display:flex;gap:10px;margin-top:16px;align-items:stretch}
+.prefix{display:flex;align-items:center;padding:0 14px;background:var(--surface-2);border:1px solid var(--line);border-right:0;border-radius:12px 0 0 12px;font-weight:700;color:var(--ink-soft)}
+.ansrow.has-prefix input{border-radius:0 12px 12px 0;border-left:0}
+.ansrow.suffix-mode input{border-radius:12px 0 0 12px;border-right:0}
+.suffix{display:flex;align-items:center;padding:0 14px;background:var(--surface-2);border:1px solid var(--line);border-left:0;border-radius:0 12px 12px 0;font-weight:700;color:var(--ink-soft)}
+input[type=text]{flex:1;min-width:0;font-family:"JetBrains Mono";font-weight:700;font-size:18px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+.feedback{margin-top:16px;border-radius:13px;padding:14px 16px;display:none}
+.feedback.show{display:block;animation:fade .2s ease}
+.feedback.ok{background:var(--good-wash);border:1px solid var(--good)}
+.feedback.no{background:var(--bad-wash);border:1px solid var(--bad)}
+.fb-head{font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+.feedback.ok .fb-head{color:var(--good)}
+.feedback.no .fb-head{color:var(--bad)}
+.working{margin-top:9px;font-family:"JetBrains Mono";font-size:13.5px;line-height:1.7;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word}
+.working .hl{color:var(--ink);font-weight:700}
+
+.btn{font-family:"Bricolage Grotesque";font-weight:700;font-size:15px;border:0;border-radius:12px;padding:13px 18px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:var(--shadow)}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#06110b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#06110b}}
+.btn:hover{filter:brightness(1.05)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:10px 14px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:default}
+.btnrow{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.selrow{display:flex;gap:10px;align-items:center;margin:4px 0 2px;flex-wrap:wrap}
+select{font-family:"Inter";font-weight:600;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);cursor:pointer}
+.lead{color:var(--ink-soft);font-size:14.5px;margin:2px 0 0}
+footer{color:var(--ink-faint);font-size:12.5px;text-align:center;margin-top:34px}
+@media (max-width:560px){
+  .fc-q{font-size:23px}
+  .stat .n{font-size:19px}
+  .tab span.t-label{display:none}
+  .tab{padding:11px 4px}
+  .tab .t-ico{font-size:19px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brandrow">
+      <div class="logo">
+        <div class="mark">£</div>
+        <div>
+          <h1>Business Formula Lab</h1>
+          <div class="tag">Learn every formula &middot; drill it &middot; walk into that exam ready</div>
+        </div>
+      </div>
+      <button class="iconbtn" id="themeBtn" title="Switch light / dark" aria-label="Switch theme">◐</button>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="learn"><span class="t-ico">📘</span><span class="t-label">Learn</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="cards"><span class="t-ico">🃏</span><span class="t-label">Flashcards</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="practice"><span class="t-ico">✏️</span><span class="t-label">Practice</span></button>
+    </div>
+  </header>
+
+  <!-- LEARN -->
+  <section class="panel active" id="learn" role="tabpanel">
+    <p class="lead">Every formula, in plain English, with a worked example. Tap <b>Flashcards</b> to memorise them, then <b>Practice</b> to test yourself.</p>
+    <div class="chips" id="learnChips"></div>
+    <div id="learnList"></div>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section class="panel" id="cards" role="tabpanel">
+    <p class="lead">Read the name, say the formula out loud, then tap the card to check. Shuffle and repeat until you never miss one.</p>
+    <div class="selrow">
+      <select id="fcCat"></select>
+      <button class="btn ghost sm" id="fcShuffle">🔀 Shuffle</button>
+    </div>
+    <div class="fc-stage">
+      <div class="fc" id="fc">
+        <div class="fc-face">
+          <div class="fc-hint">tap to flip</div>
+          <div class="fc-prompt">
+            <div class="fc-cat" id="fcCatLabel"></div>
+            <div class="fc-q" id="fcQ"></div>
+          </div>
+          <div class="fc-answer">
+            <div class="fc-cat">The formula</div>
+            <div class="fc-formula" id="fcFormula"></div>
+            <div class="meaning" id="fcMeaning"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn ghost" id="fcPrev">← Prev</button>
+      <div class="count" id="fcCount">1 / 1</div>
+      <button class="btn ghost" id="fcNext">Next →</button>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="panel" id="practice" role="tabpanel">
+    <p class="lead">Real exam-style questions with fresh numbers every time. Type your answer and hit <b>Check</b>. You get the full working either way.</p>
+    <div class="stats">
+      <div class="stat"><div class="n" id="stAtt">0</div><div class="l">Tried</div></div>
+      <div class="stat"><div class="n" id="stCorr">0</div><div class="l">Correct</div></div>
+      <div class="stat streak"><div class="n" id="stStreak">0</div><div class="l">Streak</div></div>
+      <div class="stat"><div class="n" id="stPct">—</div><div class="l">Score</div></div>
+    </div>
+    <div class="selrow">
+      <select id="prCat"></select>
+      <button class="btn ghost sm" id="prReset">↺ Reset score</button>
+    </div>
+    <div class="q" id="qbox" style="margin-top:14px">
+      <div class="q-cat" id="qCat"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="ansrow" id="ansRow">
+        <input type="text" id="ansInput" inputmode="decimal" autocomplete="off" placeholder="Your answer">
+      </div>
+      <div class="feedback" id="fb">
+        <div class="fb-head" id="fbHead"></div>
+        <div class="working" id="fbWork"></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" id="checkBtn">Check</button>
+        <button class="btn ghost" id="nextBtn">Next question →</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Business Formula Lab · built for RED · works offline — keep it on your laptop</footer>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const rnd=(min,max,step)=>{step=step||1;const n=Math.floor((Math.random()*(max-min))/step)*step+min;return Math.round(n/step)*step;};
+const money=n=>'£'+Math.round(n).toLocaleString('en-GB');
+const money2=n=>'£'+n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=n=>Math.round(n).toLocaleString('en-GB');
+const pct=(n,d)=>n.toLocaleString('en-GB',{minimumFractionDigits:d==null?1:d,maximumFractionDigits:d==null?1:d})+'%';
+const dec=(n,d)=>n.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* ---------- formula data ---------- */
+/* unit: prefix shown before the input ('£') or suffix after it ('%','units', etc). dp = decimal places for the answer */
+const F=[
+ {cat:"Revenue, Costs & Profit",
+  name:"Sales Revenue",
+  formula:"Revenue = Selling Price × Quantity Sold",
+  meaning:"The total money coming in from sales — before any costs are taken off.",
+  make(){const p=rnd(2,50,0.5),q=rnd(50,2000,10);return{
+    text:`A shop sells each item for <b>${money2(p)}</b> and sells <b>${num(q)}</b> of them. What is the sales revenue?`,
+    ans:p*q,prefix:'£',dp:0,
+    work:`Revenue = Price × Quantity\n= ${money2(p)} × ${num(q)}\n= <span class="hl">${money(p*q)}</span>`};}},
+
+ {cat:"Revenue, Costs & Profit",
+  name:"Total Costs",
+  formula:"Total Costs = Fixed Costs + Variable Costs",
+  meaning:"Everything it costs to run the business: costs that stay the same (fixed) plus costs that rise with output (variable).",
+  make(){const f=rnd(1000,20000,500),v=rnd(2000,30000,500);return{
+    text:`A firm has fixed costs of <b>${money(f)}</b> and variable costs of <b>${money(v)}</b>. What are its total costs?`,
+    ans:f+v,prefix:'£',dp:0,
+    work:`Total Costs = Fixed + Variable\n= ${money(f)} + ${money(v)}\n= <span class="hl">${money(f+v)}</span>`};}},
+
+ {cat:"Revenue, Costs & Profit",
+  name:"Total Variable Costs",
+  formula:"Total Variable Costs = Variable Cost per Unit × Quantity",
+  meaning:"The part of costs that grows every time you make one more unit (materials, etc).",
+  make(){const v=rnd(1,20,0.5),q=rnd(100,3000,10);return{
+    text:`It costs <b>${money2(v)}</b> in materials to make one unit. The firm makes <b>${num(q)}</b> units. What are the total variable costs?`,
+    ans:v*q,prefix:'£',dp:0,
+    work:`Total Variable Costs = VC per unit × Quantity\n= ${money2(v)} × ${num(q)}\n= <span class="hl">${money(v*q)}</span>`};}},
+
+ {cat:"Revenue, Costs & Profit",
+  name:"Profit",
+  formula:"Profit = Total Revenue − Total Costs",
+  meaning:"What's left after you take all costs off your revenue. Negative means a loss.",
+  make(){const r=rnd(20000,120000,1000),c=rnd(10000,110000,1000);return{
+    text:`A business has total revenue of <b>${money(r)}</b> and total costs of <b>${money(c)}</b>. What is its profit?`,
+    ans:r-c,prefix:'£',dp:0,
+    work:`Profit = Revenue − Total Costs\n= ${money(r)} − ${money(c)}\n= <span class="hl">${money(r-c)}</span>${r-c<0?'  (a loss)':''}`};}},
+
+ {cat:"Profit Margins",
+  name:"Gross Profit",
+  formula:"Gross Profit = Revenue − Cost of Sales",
+  meaning:"Profit from just making/selling the product, before overheads like rent and wages.",
+  make(){const r=rnd(20000,200000,1000),c=rnd(5000,Math.round(r*0.8),1000);return{
+    text:`Revenue is <b>${money(r)}</b> and cost of sales is <b>${money(c)}</b>. What is the gross profit?`,
+    ans:r-c,prefix:'£',dp:0,
+    work:`Gross Profit = Revenue − Cost of Sales\n= ${money(r)} − ${money(c)}\n= <span class="hl">${money(r-c)}</span>`};}},
+
+ {cat:"Profit Margins",
+  name:"Net Profit",
+  formula:"Net Profit = Gross Profit − Other Expenses",
+  meaning:"The real bottom line: gross profit after rent, wages, bills and other running costs.",
+  make(){const g=rnd(20000,150000,1000),e=rnd(2000,Math.round(g*0.8),500);return{
+    text:`Gross profit is <b>${money(g)}</b> and other expenses are <b>${money(e)}</b>. What is the net profit?`,
+    ans:g-e,prefix:'£',dp:0,
+    work:`Net Profit = Gross Profit − Expenses\n= ${money(g)} − ${money(e)}\n= <span class="hl">${money(g-e)}</span>`};}},
+
+ {cat:"Profit Margins",
+  name:"Gross Profit Margin",
+  formula:"Gross Profit Margin = (Gross Profit ÷ Revenue) × 100",
+  meaning:"What % of each £ of sales is gross profit. Higher = better.",
+  make(){const r=rnd(20000,200000,1000),g=rnd(4000,Math.round(r*0.7),1000);return{
+    text:`Gross profit is <b>${money(g)}</b> on revenue of <b>${money(r)}</b>. What is the gross profit margin? (1 d.p.)`,
+    ans:g/r*100,suffix:'%',dp:1,
+    work:`Gross Profit Margin = (Gross Profit ÷ Revenue) × 100\n= (${money(g)} ÷ ${money(r)}) × 100\n= <span class="hl">${pct(g/r*100)}</span>`};}},
+
+ {cat:"Profit Margins",
+  name:"Net Profit Margin",
+  formula:"Net Profit Margin = (Net Profit ÷ Revenue) × 100",
+  meaning:"What % of each £ of sales ends up as real profit after everything.",
+  make(){const r=rnd(20000,200000,1000),n=rnd(2000,Math.round(r*0.4),1000);return{
+    text:`Net profit is <b>${money(n)}</b> on revenue of <b>${money(r)}</b>. What is the net profit margin? (1 d.p.)`,
+    ans:n/r*100,suffix:'%',dp:1,
+    work:`Net Profit Margin = (Net Profit ÷ Revenue) × 100\n= (${money(n)} ÷ ${money(r)}) × 100\n= <span class="hl">${pct(n/r*100)}</span>`};}},
+
+ {cat:"Break-even",
+  name:"Contribution per Unit",
+  formula:"Contribution per Unit = Selling Price − Variable Cost per Unit",
+  meaning:"What each sale 'contributes' towards paying off the fixed costs (and then profit).",
+  make(){const p=rnd(6,60,1),v=rnd(1,p-2,1);return{
+    text:`An item sells for <b>${money2(p)}</b> and has a variable cost of <b>${money2(v)}</b> per unit. What is the contribution per unit?`,
+    ans:p-v,prefix:'£',dp:2,
+    work:`Contribution per Unit = Price − Variable Cost per unit\n= ${money2(p)} − ${money2(v)}\n= <span class="hl">${money2(p-v)}</span>`};}},
+
+ {cat:"Break-even",
+  name:"Break-even Point",
+  formula:"Break-even (units) = Fixed Costs ÷ Contribution per Unit",
+  meaning:"How many units you must sell to cover all costs — no profit, no loss yet.",
+  make(){const c=rnd(3,25,1),u=rnd(200,4000,50),f=c*u;return{
+    text:`Fixed costs are <b>${money(f)}</b> and contribution per unit is <b>${money2(c)}</b>. How many units must be sold to break even?`,
+    ans:u,suffix:'units',dp:0,
+    work:`Break-even = Fixed Costs ÷ Contribution per unit\n= ${money(f)} ÷ ${money2(c)}\n= <span class="hl">${num(u)} units</span>`};}},
+
+ {cat:"Break-even",
+  name:"Margin of Safety",
+  formula:"Margin of Safety = Actual Sales − Break-even Sales",
+  meaning:"How far sales can fall before you start making a loss. Measured in units.",
+  make(){const be=rnd(500,5000,50),m=rnd(100,3000,50),act=be+m;return{
+    text:`A firm sells <b>${num(act)}</b> units and its break-even point is <b>${num(be)}</b> units. What is the margin of safety?`,
+    ans:m,suffix:'units',dp:0,
+    work:`Margin of Safety = Actual Sales − Break-even\n= ${num(act)} − ${num(be)}\n= <span class="hl">${num(m)} units</span>`};}},
+
+ {cat:"Break-even",
+  name:"Total Contribution",
+  formula:"Total Contribution = Contribution per Unit × Units Sold",
+  meaning:"All the contribution added up. Take fixed costs off this to get profit.",
+  make(){const c=rnd(2,30,0.5),u=rnd(100,5000,10);return{
+    text:`Contribution per unit is <b>${money2(c)}</b> and the firm sells <b>${num(u)}</b> units. What is the total contribution?`,
+    ans:c*u,prefix:'£',dp:0,
+    work:`Total Contribution = Contribution per unit × Units\n= ${money2(c)} × ${num(u)}\n= <span class="hl">${money(c*u)}</span>`};}},
+
+ {cat:"Investment Decisions",
+  name:"Average Rate of Return (ARR)",
+  formula:"ARR = (Average Annual Profit ÷ Cost of Investment) × 100",
+  meaning:"The yearly profit from an investment as a % of what it cost. Compare it to the bank interest rate.",
+  make(){const inv=rnd(20000,200000,1000),p=rnd(2000,Math.round(inv*0.3),500);return{
+    text:`An investment costs <b>${money(inv)}</b> and gives an average annual profit of <b>${money(p)}</b>. What is the ARR? (1 d.p.)`,
+    ans:p/inv*100,suffix:'%',dp:1,
+    work:`ARR = (Average Annual Profit ÷ Investment) × 100\n= (${money(p)} ÷ ${money(inv)}) × 100\n= <span class="hl">${pct(p/inv*100)}</span>`};}},
+
+ {cat:"Investment Decisions",
+  name:"Return on Capital Employed (ROCE)",
+  formula:"ROCE = (Operating Profit ÷ Capital Employed) × 100",
+  meaning:"How good the business is at turning the money invested in it into profit.",
+  make(){const ce=rnd(50000,500000,1000),op=rnd(5000,Math.round(ce*0.3),1000);return{
+    text:`Operating profit is <b>${money(op)}</b> and capital employed is <b>${money(ce)}</b>. What is the ROCE? (1 d.p.)`,
+    ans:op/ce*100,suffix:'%',dp:1,
+    work:`ROCE = (Operating Profit ÷ Capital Employed) × 100\n= (${money(op)} ÷ ${money(ce)}) × 100\n= <span class="hl">${pct(op/ce*100)}</span>`};}},
+
+ {cat:"Financial Ratios",
+  name:"Current Ratio",
+  formula:"Current Ratio = Current Assets ÷ Current Liabilities",
+  meaning:"Can the firm pay its short-term bills? Around 1.5–2 is healthy. Written like 1.8 : 1.",
+  make(){const cl=rnd(10000,60000,1000),ca=rnd(Math.round(cl*0.6),Math.round(cl*2.4),1000);return{
+    text:`Current assets are <b>${money(ca)}</b> and current liabilities are <b>${money(cl)}</b>. What is the current ratio? (2 d.p.)`,
+    ans:ca/cl,suffix:': 1',dp:2,
+    work:`Current Ratio = Current Assets ÷ Current Liabilities\n= ${money(ca)} ÷ ${money(cl)}\n= <span class="hl">${dec(ca/cl,2)} : 1</span>`};}},
+
+ {cat:"Financial Ratios",
+  name:"Net Current Assets (Working Capital)",
+  formula:"Net Current Assets = Current Assets − Current Liabilities",
+  meaning:"The cash cushion for day-to-day running. Also called working capital.",
+  make(){const ca=rnd(20000,120000,1000),cl=rnd(5000,Math.round(ca*0.95),1000);return{
+    text:`Current assets are <b>${money(ca)}</b> and current liabilities are <b>${money(cl)}</b>. What is the working capital?`,
+    ans:ca-cl,prefix:'£',dp:0,
+    work:`Net Current Assets = Current Assets − Current Liabilities\n= ${money(ca)} − ${money(cl)}\n= <span class="hl">${money(ca-cl)}</span>`};}},
+
+ {cat:"Market & Growth",
+  name:"Market Share",
+  formula:"Market Share = (Your Sales ÷ Total Market Sales) × 100",
+  meaning:"The slice of the whole market your business holds, as a %.",
+  make(){const tot=rnd(400,4000,50),you=rnd(20,Math.round(tot*0.6),10);return{
+    text:`Your sales are <b>£${num(you)}m</b> in a market worth <b>£${num(tot)}m</b> in total. What is your market share? (1 d.p.)`,
+    ans:you/tot*100,suffix:'%',dp:1,
+    work:`Market Share = (Your Sales ÷ Total Market) × 100\n= (£${num(you)}m ÷ £${num(tot)}m) × 100\n= <span class="hl">${pct(you/tot*100)}</span>`};}},
+
+ {cat:"Market & Growth",
+  name:"Percentage Change / Market Growth",
+  formula:"% Change = ((New − Old) ÷ Old) × 100",
+  meaning:"How much something grew or shrank, as a %. Works for market size, sales, profit, anything.",
+  make(){const old=rnd(100,2000,50),chg=rnd(-Math.round(old*0.3),Math.round(old*0.6),10),nw=old+chg;return{
+    text:`A market was worth <b>£${num(old)}m</b> last year and is <b>£${num(nw)}m</b> this year. What is the % change? (1 d.p.)`,
+    ans:(nw-old)/old*100,suffix:'%',dp:1,
+    work:`% Change = ((New − Old) ÷ Old) × 100\n= ((£${num(nw)}m − £${num(old)}m) ÷ £${num(old)}m) × 100\n= <span class="hl">${pct((nw-old)/old*100)}</span>${nw<old?'  (a fall)':''}`};}},
+
+ {cat:"Operations & People",
+  name:"Unit Cost (Average Cost)",
+  formula:"Unit Cost = Total Costs ÷ Output",
+  meaning:"What each single unit costs to make on average. Sell above this to profit.",
+  make(){const tc=rnd(20000,500000,1000),o=rnd(500,20000,100);return{
+    text:`Total costs are <b>${money(tc)}</b> to make <b>${num(o)}</b> units. What is the cost per unit? (2 d.p.)`,
+    ans:tc/o,prefix:'£',dp:2,
+    work:`Unit Cost = Total Costs ÷ Output\n= ${money(tc)} ÷ ${num(o)}\n= <span class="hl">${money2(tc/o)}</span>`};}},
+
+ {cat:"Operations & People",
+  name:"Labour Productivity",
+  formula:"Labour Productivity = Output ÷ Number of Employees",
+  meaning:"How much each worker produces on average. Higher = more efficient staff.",
+  make(){const o=rnd(2000,100000,100),e=rnd(5,500,5);return{
+    text:`A factory produces <b>${num(o)}</b> units with <b>${num(e)}</b> employees. What is the output per employee? (1 d.p.)`,
+    ans:o/e,suffix:'units/worker',dp:1,
+    work:`Labour Productivity = Output ÷ Employees\n= ${num(o)} ÷ ${num(e)}\n= <span class="hl">${dec(o/e,1)} units per worker</span>`};}},
+
+ {cat:"Operations & People",
+  name:"Capacity Utilisation",
+  formula:"Capacity Utilisation = (Actual Output ÷ Maximum Output) × 100",
+  meaning:"How much of the firm's possible output it is actually using. Near 90% is usually ideal.",
+  make(){const max=rnd(2000,50000,500),act=rnd(Math.round(max*0.3),max,100);return{
+    text:`A plant can make <b>${num(max)}</b> units but is making <b>${num(act)}</b>. What is its capacity utilisation? (1 d.p.)`,
+    ans:act/max*100,suffix:'%',dp:1,
+    work:`Capacity Utilisation = (Actual ÷ Maximum) × 100\n= (${num(act)} ÷ ${num(max)}) × 100\n= <span class="hl">${pct(act/max*100)}</span>`};}},
+
+ {cat:"Operations & People",
+  name:"Labour Turnover",
+  formula:"Labour Turnover = (Staff Who Left ÷ Average Staff) × 100",
+  meaning:"The % of the workforce that leaves each year. High turnover is costly and a warning sign.",
+  make(){const avg=rnd(40,1000,10),left=rnd(2,Math.round(avg*0.4),1);return{
+    text:`<b>${num(left)}</b> staff left this year out of an average of <b>${num(avg)}</b> employees. What is the labour turnover? (1 d.p.)`,
+    ans:left/avg*100,suffix:'%',dp:1,
+    work:`Labour Turnover = (Staff Who Left ÷ Average Staff) × 100\n= (${num(left)} ÷ ${num(avg)}) × 100\n= <span class="hl">${pct(left/avg*100)}</span>`};}}
+];
+
+const CATS=[...new Set(F.map(f=>f.cat))];
+
+/* ---------- theme ---------- */
+(function(){
+  let saved=null; try{saved=localStorage.getItem('bfl-theme');}catch(e){}
+  if(saved) document.documentElement.setAttribute('data-theme',saved);
+  $('#themeBtn').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    const next=isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('bfl-theme',next);}catch(e){}
+  });
+})();
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
+    t.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    $('#'+t.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ---------- LEARN ---------- */
+let learnFilter='All';
+function renderChips(){
+  const box=$('#learnChips'); box.innerHTML='';
+  ['All',...CATS].forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'; b.textContent=c; b.setAttribute('aria-pressed',c===learnFilter);
+    b.onclick=()=>{learnFilter=c; renderChips(); renderLearn();};
+    box.appendChild(b);
+  });
+}
+function renderLearn(){
+  const list=$('#learnList'); list.innerHTML='';
+  CATS.forEach(cat=>{
+    if(learnFilter!=='All' && cat!==learnFilter) return;
+    const items=F.filter(f=>f.cat===cat);
+    const h=document.createElement('div'); h.className='cat'; h.textContent=cat; list.appendChild(h);
+    items.forEach(f=>{
+      const fParts=f.formula.split('=');
+      const left=fParts[0], right=fParts.slice(1).join('=');
+      const eg=f.make();
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="fname">${f.name}</div>
+        <div class="formula mono">${left}=<span class="eq">${right}</span></div>
+        <div class="meaning">${f.meaning}</div>
+        <div class="eg"><b>Example.</b> ${eg.text.replace(/<\/?b>/g,'')}<br>${eg.work.replace(/<span class="hl">/g,'→ <b>').replace(/<\/span>/g,'</b>').replace(/\n/g,'<br>')}</div>`;
+      list.appendChild(card);
+    });
+  });
+}
+
+/* ---------- FLASHCARDS ---------- */
+let fcList=[...F], fcIdx=0, fcCat='All';
+function buildCatSelect(sel,withAll){
+  sel.innerHTML='';
+  if(withAll){const o=document.createElement('option');o.value='All';o.textContent='All topics';sel.appendChild(o);}
+  CATS.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+}
+function fcApplyCat(){
+  fcCat=$('#fcCat').value;
+  fcList = fcCat==='All'? [...F] : F.filter(f=>f.cat===fcCat);
+  fcIdx=0; renderFC();
+}
+function renderFC(){
+  const f=fcList[fcIdx]; if(!f)return;
+  $('#fc').classList.remove('flipped');
+  $('#fcCatLabel').textContent=f.cat;
+  $('#fcQ').textContent='What is the formula for '+f.name+'?';
+  const fParts=f.formula.split('=');
+  $('#fcFormula').innerHTML=fParts[0]+'= '+fParts.slice(1).join('=');
+  $('#fcMeaning').textContent=f.meaning;
+  $('#fcCount').textContent=(fcIdx+1)+' / '+fcList.length;
+}
+$('#fc').addEventListener('click',()=>$('#fc').classList.toggle('flipped'));
+$('#fcPrev').onclick=()=>{fcIdx=(fcIdx-1+fcList.length)%fcList.length;renderFC();};
+$('#fcNext').onclick=()=>{fcIdx=(fcIdx+1)%fcList.length;renderFC();};
+$('#fcShuffle').onclick=()=>{for(let i=fcList.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcList[i],fcList[j]]=[fcList[j],fcList[i]];}fcIdx=0;renderFC();};
+$('#fcCat').onchange=fcApplyCat;
+
+/* ---------- PRACTICE ---------- */
+let prCat='All', cur=null, answered=false;
+let att=0,corr=0,streak=0,best=0;
+function prPool(){return prCat==='All'?F:F.filter(f=>f.cat===prCat);}
+function newQ(){
+  const pool=prPool();
+  cur=pool[Math.floor(Math.random()*pool.length)];
+  const q=cur.make(); cur._q=q;
+  $('#qCat').textContent=cur.cat+'  ·  '+cur.name;
+  $('#qText').innerHTML=q.text;
+  const row=$('#ansRow');
+  row.className='ansrow'+(q.prefix?' has-prefix':'')+(q.suffix?' suffix-mode':'');
+  row.innerHTML='';
+  if(q.prefix){const p=document.createElement('span');p.className='prefix';p.textContent=q.prefix;row.appendChild(p);}
+  const inp=document.createElement('input');
+  inp.type='text';inp.id='ansInput';inp.inputMode='decimal';inp.autocomplete='off';inp.placeholder='Your answer';
+  row.appendChild(inp);
+  if(q.suffix){const s=document.createElement('span');s.className='suffix';s.textContent=q.suffix;row.appendChild(s);}
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){answered?newQ():check();}});
+  $('#fb').className='feedback';
+  $('#checkBtn').disabled=false;
+  answered=false;
+  inp.focus();
+}
+function parseVal(s){
+  if(!s)return NaN;
+  s=s.replace(/[£$,%\s]/g,'').replace(/units?/gi,'').replace(/[^0-9.\-]/g,'');
+  return parseFloat(s);
+}
+function check(){
+  if(answered)return;
+  const inp=$('#ansInput');
+  const user=parseVal(inp.value);
+  if(isNaN(user)){inp.focus();return;}
+  const q=cur._q;
+  const tol=Math.max(Math.pow(10,-q.dp)/2+1e-9, Math.abs(q.ans)*0.01);
+  const ok=Math.abs(user-q.ans)<=tol;
+  answered=true; $('#checkBtn').disabled=true;
+  att++; if(ok){corr++;streak++;best=Math.max(best,streak);}else{streak=0;}
+  $('#stAtt').textContent=att;$('#stCorr').textContent=corr;$('#stStreak').textContent=streak;
+  $('#stPct').textContent=att?Math.round(corr/att*100)+'%':'—';
+  const fb=$('#fb');
+  fb.className='feedback show '+(ok?'ok':'no');
+  $('#fbHead').innerHTML=ok?'✓ Correct!'+(streak>1?' &nbsp;🔥 '+streak+' in a row':''):'✗ Not quite';
+  $('#fbWork').innerHTML=q.work;
+}
+$('#checkBtn').onclick=check;
+$('#nextBtn').onclick=newQ;
+$('#prReset').onclick=()=>{att=corr=streak=best=0;['#stAtt','#stCorr','#stStreak'].forEach(id=>$(id).textContent='0');$('#stPct').textContent='—';};
+$('#prCat').onchange=()=>{prCat=$('#prCat').value;newQ();};
+
+/* ---------- init ---------- */
+renderChips();renderLearn();
+buildCatSelect($('#fcCat'),true);fcApplyCat();
+buildCatSelect($('#prCat'),true);newQ();
+</script>
+</body>
+</html>
